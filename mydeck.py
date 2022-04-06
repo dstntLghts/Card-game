@@ -1,4 +1,6 @@
 import random
+import tkinter as tk
+import tkinter.ttk as ttk
 
 class Card:
     def __init__(self,suit,value):
@@ -42,6 +44,41 @@ class Player:
     def __init__(self,name,score=0):
         self.name = name
         self.score = score
+        
 
-test = Deck()
-test.show()
+class GUI:
+
+    def __init__(self):
+        self.root = tk.Tk()
+        self.build()
+
+    def build(self):
+        play_btn = ttk.Button(self.root,text="Play",command=menu.play)
+        quit_btn = ttk.Button(self.root,text="Quit",command=self.root.destroy)
+        play_btn.pack()
+        quit_btn.pack()
+        self.root.mainloop()
+
+    def play(self):
+        print("Game Started")
+
+    def select_players(self):
+        pass
+
+    def quit(self):
+        print("Quiting game")
+
+    def save_game(self):
+        pass
+
+    def load_game(self):
+        pass
+
+    def difficulty(self):
+        pass
+
+
+# test = Deck()
+# test.show()
+menu = Menu()
+interface = GUI()
