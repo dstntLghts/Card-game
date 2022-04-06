@@ -4,20 +4,20 @@ class Card:
     def __init__(self,suit,value):
         self.suit=suit
         self.value=value
+        self.open= False # Ανοιχτή/Κλειστή
 
     def show(self): 
         print("{} of {}".format(self.value,self.suit))
 
 class Deck:
     def __init__(self):
-        self.cards=[]
+        self.cards=[] 
         self.build()
         self.shuffle()
-        
 
     def build(self):
         for s in ["Spades","Clubs","Diamonds","Hearts"]:
-            for v in range(1,14):
+            for v in (1,2,3,4,5,6,7,8,9,10,'J','Q','K'):
                 self.cards.append(Card(s,v))
     
     def shuffle(self):
@@ -28,6 +28,20 @@ class Deck:
     def show(self):
         for c in self.cards:
             c.show()
+
+    def select_cards():
+        pass
+        # Πατημα Κουμπιου
+        # Επιλογη 1ης Καρτας
+        # Επιλογη 2ης Καρτας
+        # Έλεγχος αν ειναι ιδιες
+        # Αν ΝΑΙ: Παραμενουν ανοιχτες και ποντος στον αντιστοιχο παικτη
+        # Αν ΟΧΙ: Κλείνουνε και παιζει ο επομενος παικτης
+  
+class Player:
+    def __init__(self,name,score=0):
+        self.name = name
+        self.score = score
 
 test = Deck()
 test.show()
