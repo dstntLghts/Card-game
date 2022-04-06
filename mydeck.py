@@ -7,7 +7,7 @@ class Card:
         self.open= False # Ανοιχτή/Κλειστή
 
     def show(self): 
-        print("{} of {}".format(self.value,self.suit))
+        print("{}{}".format(self.value,self.suit))
 
 class Deck:
     def __init__(self):
@@ -16,7 +16,7 @@ class Deck:
         self.shuffle()
 
     def build(self):
-        for s in ["Spades","Clubs","Diamonds","Hearts"]:
+        for s in ["♠","♣","♦","♥"]:
             for v in (1,2,3,4,5,6,7,8,9,10,'J','Q','K'):
                 self.cards.append(Card(s,v))
     
@@ -29,7 +29,7 @@ class Deck:
         for c in self.cards:
             c.show()
 
-    def select_cards():
+    def select_cards(card_choice):
         pass
         # Πατημα Κουμπιου
         # Επιλογη 1ης Καρτας
