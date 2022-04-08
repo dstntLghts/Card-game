@@ -68,12 +68,18 @@ class GUI:
     def __init__(self):
         self.root = tk.Tk()
         self.build()
-
+        
     def build(self):
-        play_btn = ttk.Button(self.root,text="Play",command=menu.play)
-        quit_btn = ttk.Button(self.root,text="Quit",command=self.root.destroy)
-        play_btn.pack()
-        quit_btn.pack()
+        style = ttk.Style()
+        style.theme_use('alt')
+        style.configure('A.TButton', font=('Helvetica',12,),  background='#8cd921')
+        play_btn = ttk.Button(self.root,text="Play",command=self.play,style='A.TButton')
+        slc_players_btn = ttk.Button(self.root,text="Select Players",command=self.select_players,style='A.TButton')
+        quit_btn = ttk.Button(self.root,text="Quit",command=self.root.destroy,style='A.TButton')
+        play_btn.grid(row=0,column=0,ipadx=50,ipady=20,padx=30,pady=10)
+        slc_players_btn.grid(row=1,column=0,ipadx=50,ipady=20,padx=30,pady=10)
+        quit_btn.grid(row=2,column=0,ipadx=50,ipady=20,padx=30,pady=10)
+
         self.root.mainloop()
 
     def play(self):
