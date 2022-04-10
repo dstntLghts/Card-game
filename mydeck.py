@@ -156,8 +156,6 @@ class GUI:
     def difficulty(self):
         pass
 
-
-
 test = Deck("hard")
 test.show_deck()
 interface = GUI()
