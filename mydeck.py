@@ -120,8 +120,29 @@ class GUI:
         print(row,col)
 
     def select_players(self):
-        pass
+        #  Under construction
+        self.root.destroy()  # Διαγραφη παραθυρου μενου
+        self.root = tk.Tk()  # Εκκινηση παραθυρου παιχνιδιου
+        self.root.geometry("300x400")
+        self.root.resizable(0,0)
+        self.root.title("Cards Game")  # Τιτλος παραθυρου
+        style = ttk.Style() # Δημιουργια Στυλ
+        style.theme_use('alt')
+        style.configure('A.TButton', font=('Helvetica',12,),  background='#111111')
+        player1 = ttk.Button(self.root, text="1 Player", command=self.action_select_players)
+        player2 = ttk.Button(self.root, text="2 Players", command=self.action_select_players)
+        player3 = ttk.Button(self.root, text="3 Players", command=self.action_select_players)
+        player4 = ttk.Button(self.root, text="4 Players", command=self.action_select_players)
+        player1.grid(row=0,column=0,ipadx=50,ipady=20,padx=63,pady=10)
+        player2.grid(row=1,column=0,ipadx=50,ipady=20,padx=30,pady=10)
+        player3.grid(row=2,column=0,ipadx=50,ipady=20,padx=30,pady=10)
+        player4.grid(row=3,column=0,ipadx=50,ipady=20,padx=30,pady=10)
+        self.root.mainloop()
 
+    def action_select_players(self,num):
+        #  Under construction
+        pass
+    
     def quit(self):
         print("Quiting game")
 
