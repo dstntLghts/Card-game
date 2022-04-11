@@ -1,4 +1,5 @@
 import random
+from unicodedata import name
 import numpy as np
 import tkinter as tk
 import tkinter.ttk as ttk
@@ -62,6 +63,7 @@ class Player:
     def __init__(self,name,score=0):
         self.name = name
         self.score = score
+
 
 class GUI:
 
@@ -130,7 +132,7 @@ class GUI:
         style.theme_use('alt')
         style.configure('A.TButton', font=('Helvetica',12,),  background='#111111')
         player1 = ttk.Button(self.root, text="1 Player", command=self.action_select_players)
-        player2 = ttk.Button(self.root, text="2 Players", command=self.action_select_players)
+        player2 = ttk.Button(self.root, text="2 Players", command=lambda i=2:self.action_select_players(i))
         player3 = ttk.Button(self.root, text="3 Players", command=self.action_select_players)
         player4 = ttk.Button(self.root, text="4 Players", command=self.action_select_players)
         player1.grid(row=0,column=0,ipadx=50,ipady=20,padx=63,pady=10)
@@ -140,12 +142,15 @@ class GUI:
         self.root.mainloop()
 
     def action_select_players(self,num):
-        #  Under construction
-        pass
-    
+        #  Under construction [CT] Passed arg from players 2 button, to create two Players and then initiate game. 
+        if num==2:
+            player1=Player("Player 1")
+            player2=Player("Player 2")
+            self.difficulty()
+        # to be cont.
+
     def quit(self):
         print("Quiting game")
-
 
     def save_game(self):
         pass
@@ -153,9 +158,25 @@ class GUI:
     def load_game(self):
         pass
 
-    def difficulty(self):
-        pass
+    def difficulty(self): # after Player number next windows could be diff choice following the same manner.
+        self.root.destroy()  # Διαγραφη παραθυρου μενου
+        self.root = tk.Tk()  # Εκκινηση παραθυρου παιχνιδιου
+        self.root.geometry("300x400")
+        self.root.resizable(0,0)
+        self.root.title("Cards Game")  # Τιτλος παραθυρου
+        style = ttk.Style() # Δημιουργια Στυλ
+        style.theme_use('alt')
+        style.configure('A.TButton', font=('Helvetica',12,),  background='#111111')
+        easy = ttk.Button(self.root, text="Easy",command=lambda i="easy":self.create_deck(i))
+        average = ttk.Button(self.root, text="Average", command=lambda i="average":self.create_deck(i))
+        hard = ttk.Button(self.root, text="Hard", command=lambda i="hard":self.create_deck(i))
+        easy.grid(row=0,column=0,ipadx=50,ipady=20,padx=63,pady=10)
+        average.grid(row=1,column=0,ipadx=50,ipady=20,padx=30,pady=10)
+        hard.grid(row=2,column=0,ipadx=50,ipady=20,padx=30,pady=10)
+        self.root.mainloop()
 
-test = Deck("hard")
-test.show_deck()
+    def create_deck(self,mode): #creates a shuffled deck depending users choice 
+        ndeck=Deck(mode)
+        ndeck.show_deck()
+
 interface = GUI()
