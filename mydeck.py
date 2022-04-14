@@ -9,7 +9,7 @@ class Card:
         self.suit=suit
         self.value=value
         self.id=id
-        self.open= True # Ανοιχτή/Κλειστή
+        self.open= False # Ανοιχτή/Κλειστή
 
     def show(self):
         if self.open==False:
@@ -29,21 +29,21 @@ class Deck:
         id=0
         if diff_choice=='easy':    
             for s in ["♠","♣","♦","♥"]:
-                for v in (10,'J','Q','K'):
+                for v in ("10",'J','Q','K'):
                     id=id+1
                     self.cards.append(Card(s,v,id))
             self.rows=4
             self.cols=4
         elif diff_choice=='average':
             for s in ["♠","♣","♦","♥"]:
-                for v in (1,2,3,4,5,6,7,8,9,10):
+                for v in ("1","2","3","4","5","6","7","8","9","10"):
                     id=id+1
                     self.cards.append(Card(s,v,id))
             self.rows=4
             self.cols=10
         elif diff_choice=='hard':
             for s in ["♠","♣","♦","♥"]:
-                for v in (1,2,3,4,5,6,7,8,9,10,'J','Q','K'):
+                for v in ("1","2","3","4","5","6","7","8","9","10",'J','Q','K'):
                     id=id+1
                     self.cards.append(Card(s,v,id))
             self.rows=4
@@ -76,7 +76,6 @@ class Player:
 class GUI:
 
     def __init__(self):
-        self.cards = []
         self.ndeck = None
         self.build_menu()
 
@@ -107,24 +106,33 @@ class GUI:
         self.root.resizable(0,0)
         self.root.geometry("+550+250")
         card_id = 0
-        style = ttk.Style()
-        style.theme_use('alt')
-        style.configure('A.TButton', font=('Helvetica',12,), foreground="red")
-        style.configure('B.TButton', font=('Helvetica',12,), foreground="black")
-        style.configure('Hidden.TButton',font=('Helvetica',20))
         for i in range(self.ndeck.rows):
             for j in range (self.ndeck.cols):
-                card = tk.Button(self.root,text="🂠",height=3,width=5,font=("Helvetica"),command=lambda i=i,j=j:self.select_card(i,j))
-                # remove i=i j=j to see late binding issue
-                # lamda για περασμα arguments
+                card = tk.Button(self.root,text="🂠",height=3,width=5,font=("Helvetica"),
+                                 command=lambda card_id=card_id,i=i,j=j:self.select_card(card_id,i,j))
+                # late binding issue
+                # using lamda to pass arguments
                 card.grid(row=i,column=j)
                 card_id += 1
         self.root.mainloop()
 
 
-    def select_card(self,row,col):
+    def select_card(self,card_id,r,c):
         # κωδικας για επιλογη καρτας
-        print(row,col)
+        if self.ndeck.cards[card_id].suit in ["♦","♥"]:
+            card = tk.Label(self.root,text=f"{self.ndeck.cards[card_id].value}{self.ndeck.cards[card_id].suit}",
+                             height=3,width=5,font=("Helvetica"),fg="red")
+        else:
+            card = tk.Label(self.root,text=f"{self.ndeck.cards[card_id].value}{self.ndeck.cards[card_id].suit}",
+                             height=3,width=5,font=("Helvetica"))
+        card.grid(row=r,column=c)
+        self.ndeck.cards[card_id].open = True
+
+    def evaluate_cards(self):
+        # Κωδικας για check αν ο παικτης εχει σκοραρει
+        pass
+
+
 
     def select_players(self):
         #  Under construction
@@ -194,9 +202,3 @@ interface = GUI()
 
 
 # Code DUMP (don't delete may use later)
-
-# Test Drive Cards
-# if test.cards[card_id].suit in ["♦","♥"]:
-#     card = ttk.Button(self.root,text=f"{test.cards[card_id].value}{test.cards[card_id].suit}",style="A.TButton")
-# else:
-#     card = ttk.Button(self.root,text=f"{test.cards[card_id].value}{test.cards[card_id].suit}",style="B.TButton")
