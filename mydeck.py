@@ -20,6 +20,8 @@ class Card:
 class Deck:
     def __init__(self,difficulty):
         self.cards=[]
+        self.cards_check = []
+        self.counter = 0
         self.rows=0
         self.cols=0
         self.build(difficulty)
@@ -27,7 +29,7 @@ class Deck:
 
     def build(self,diff_choice):
         id=0
-        if diff_choice=='easy':    
+        if diff_choice=='easy':
             for s in ["♠","♣","♦","♥"]:
                 for v in ("10",'J','Q','K'):
                     id=id+1
@@ -56,7 +58,7 @@ class Deck:
 
     def show_deck(self):
         for c in self.cards:
-                c.show()
+            c.show()
 
     def select_cards(card_choice):
         pass
@@ -119,18 +121,39 @@ class GUI:
 
     def select_card(self,card_id,r,c):
         # κωδικας για επιλογη καρτας
-        if self.ndeck.cards[card_id].suit in ["♦","♥"]:
+        if self.ndeck.cards[card_id].suit in ["♦","♥"]: # Adds red color
             card = tk.Label(self.root,text=f"{self.ndeck.cards[card_id].value}{self.ndeck.cards[card_id].suit}",
-                             height=3,width=5,font=("Helvetica"),fg="red")
+                            height=3,width=5,font=("Helvetica"),fg="red")
         else:
             card = tk.Label(self.root,text=f"{self.ndeck.cards[card_id].value}{self.ndeck.cards[card_id].suit}",
-                             height=3,width=5,font=("Helvetica"))
+                            height=3,width=5,font=("Helvetica"))
         card.grid(row=r,column=c)
         self.ndeck.cards[card_id].open = True
+        self.ndeck.cards_check.append(list((self.ndeck.cards[card_id],card_id,r,c)))
+        print(self.ndeck.cards_check)
+        self.ndeck.counter += 1
+        if self.ndeck.counter == 2:
+            self.evaluate_cards()
+
 
     def evaluate_cards(self):
-        # Κωδικας για check αν ο παικτης εχει σκοραρει
-        pass
+        # Κωδικας για τσεκαρισμα αν ο παικτης εχει σκοραρει
+        # ΠΡΕΠΕΙ ΝΑ ΒΑΛΟΥΜΕ DELAY με το tk.after()
+        print("ENTERED CHEK")
+        if self.ndeck.cards_check[0][0].value != self.ndeck.cards_check[1][0].value:
+            print("MUST HIDE")
+            card_1 = tk.Button(self.root,text="🂠",height=3,width=5,font=("Helvetica"),
+                             command=lambda card_id=self.ndeck.cards_check[0][1],
+                                            r=self.ndeck.cards_check[0][2],
+                                            c=self.ndeck.cards_check[0][3]: self.select_card(card_id,r,c))
+            card_2 = tk.Button(self.root,text="🂠",height=3,width=5,font=("Helvetica"),
+                             command=lambda card_id=self.ndeck.cards_check[1][1],
+                                            r=self.ndeck.cards_check[1][2],
+                                            c=self.ndeck.cards_check[1][3]: self.select_card(card_id,r,c))
+            card_1.grid(row=self.ndeck.cards_check[0][2],column=self.ndeck.cards_check[0][3])
+            card_2.grid(row=self.ndeck.cards_check[1][2],column=self.ndeck.cards_check[1][3])
+        self.ndeck.counter = 0
+        self.ndeck.cards_check.clear()
 
 
 
@@ -191,10 +214,9 @@ class GUI:
         hard.grid(row=2,column=0,ipadx=50,ipady=20,padx=30,pady=10)
         self.root.mainloop()
 
-    def create_deck(self,mode): #creates a shuffled deck depending users choice 
+    def create_deck(self,mode): #creates a shuffled deck depending users choice
         self.ndeck=Deck(mode)
         self.play()
-        self.ndeck.show_deck()
 
 
 players = []
