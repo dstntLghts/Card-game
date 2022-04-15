@@ -157,7 +157,7 @@ class GUI:
         print(self.ndeck.cards_check)
         self.ndeck.counter += 1
         if self.ndeck.counter == 2:
-            after(1000,self.evaluate_cards())
+            self.evaluate_cards()
 
 
     def evaluate_cards(self):
