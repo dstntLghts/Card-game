@@ -91,8 +91,13 @@ class GUI:
         style.theme_use('alt')
         style.configure('A.TButton', font=('Helvetica',12,),  background='#8cd921')  #
         # Κουμπια
+<<<<<<< HEAD
         load_btn = ttk.Button(self.root,text="Load game",command=self.load_game,style='A.TButton')
         difficulty_btn = ttk.Button(self.root,text="New game",command=self.difficulty,style='A.TButton')
+=======
+        play_btn = ttk.Button(self.root,text="Play",command=self.difficulty,style='A.TButton')
+        slc_players_btn = ttk.Button(self.root,text="Select Players",command=self.select_players,style='A.TButton')
+>>>>>>> bc732e2a89ea654c070cce937c73bf82b23f62dd
         quit_btn = ttk.Button(self.root,text="Quit",command=self.root.destroy,style='A.TButton')
         # Τοποθετηση Κουμπιων
         load_btn.grid(row=0,column=0,ipadx=50,ipady=20,padx=90,pady=10)
@@ -101,6 +106,106 @@ class GUI:
         # Εκκινηση παραθυρου
         self.root.mainloop()
 
+<<<<<<< HEAD
+=======
+    def play(self):
+        print("Game Started")
+        self.root.destroy()  # Διαγραφη παραθυρου μενου
+        self.root = tk.Tk()  # Εκκινηση παραθυρου παιχνιδιου
+        self.root.title("Cards Game")
+        self.root.resizable(0,0)
+        self.root.geometry("+550+250")
+        card_id = 0
+        for i in range(self.ndeck.rows):
+            for j in range (self.ndeck.cols):
+                card = tk.Button(self.root,text="🂠",height=3,width=5,font=("Helvetica"),
+                                 command=lambda card_id=card_id,i=i,j=j:self.select_card(card_id,i,j))
+                # late binding issue
+                # using lamda to pass arguments
+                card.grid(row=i,column=j)
+                card_id += 1
+        self.root.mainloop()
+
+
+    def select_card(self,card_id,r,c):
+        # κωδικας για επιλογη καρτας
+        if self.ndeck.cards[card_id].suit in ["♦","♥"]: # Adds red color
+            card = tk.Label(self.root,text=f"{self.ndeck.cards[card_id].value}{self.ndeck.cards[card_id].suit}",
+                            height=3,width=5,font=("Helvetica"),fg="red")
+        else:
+            card = tk.Label(self.root,text=f"{self.ndeck.cards[card_id].value}{self.ndeck.cards[card_id].suit}",
+                            height=3,width=5,font=("Helvetica"))
+        card.grid(row=r,column=c)
+        self.ndeck.cards[card_id].open = True
+        self.ndeck.cards_check.append(list((self.ndeck.cards[card_id],card_id,r,c)))
+        print(self.ndeck.cards_check)
+        self.ndeck.counter += 1
+        if self.ndeck.counter == 2:
+            self.evaluate_cards()
+
+
+    def evaluate_cards(self):
+        # Κωδικας για τσεκαρισμα αν ο παικτης εχει σκοραρει
+        # ΠΡΕΠΕΙ ΝΑ ΒΑΛΟΥΜΕ DELAY με το tk.after()
+        print("ENTERED CHEK")
+        if self.ndeck.cards_check[0][0].value != self.ndeck.cards_check[1][0].value:
+            print("MUST HIDE")
+            card_1 = tk.Button(self.root,text="🂠",height=3,width=5,font=("Helvetica"),
+                             command=lambda card_id=self.ndeck.cards_check[0][1],
+                                            r=self.ndeck.cards_check[0][2],
+                                            c=self.ndeck.cards_check[0][3]: self.select_card(card_id,r,c))
+            card_2 = tk.Button(self.root,text="🂠",height=3,width=5,font=("Helvetica"),
+                             command=lambda card_id=self.ndeck.cards_check[1][1],
+                                            r=self.ndeck.cards_check[1][2],
+                                            c=self.ndeck.cards_check[1][3]: self.select_card(card_id,r,c))
+            card_1.grid(row=self.ndeck.cards_check[0][2],column=self.ndeck.cards_check[0][3])
+            card_2.grid(row=self.ndeck.cards_check[1][2],column=self.ndeck.cards_check[1][3])
+        self.ndeck.counter = 0
+        self.ndeck.cards_check.clear()
+
+
+
+    def select_players(self):
+        #  Under construction
+        self.root.destroy()  # Διαγραφη παραθυρου μενου
+        self.root = tk.Tk()  # Εκκινηση παραθυρου παιχνιδιου
+        self.root.geometry("300x400+550+250")  # Μεγεθος+θεση παραθυρου
+        self.root.resizable(0,0)
+        self.root.title("Cards Game")  # Τιτλος παραθυρου
+        style = ttk.Style()  # Δημιουργια Στυλ
+        style.theme_use('alt')
+        style.configure('A.TButton', font=('Helvetica',12,),  background='#111111')
+        player1 = ttk.Button(self.root, text="1 Player", command=lambda i=1:self.action_select_players(i))
+        player2 = ttk.Button(self.root, text="2 Players", command=lambda i=2:self.action_select_players(i))
+        player3 = ttk.Button(self.root, text="3 Players", command=lambda i=3:self.action_select_players(i))
+        player4 = ttk.Button(self.root, text="4 Players", command=lambda i=4:self.action_select_players(i))
+        player1.grid(row=0,column=0,ipadx=50,ipady=20,padx=63,pady=10)
+        player2.grid(row=1,column=0,ipadx=50,ipady=20,padx=30,pady=10)
+        player3.grid(row=2,column=0,ipadx=50,ipady=20,padx=30,pady=10)
+        player4.grid(row=3,column=0,ipadx=50,ipady=20,padx=30,pady=10)
+        self.root.mainloop()
+
+    def action_select_players(self,num):
+        players.clear()  # Remove previous players
+        for i in range(1,5):  # Adds Players
+            if i == num:
+                for j in range(i):
+                    players.append(Player(f"Player{j}"))
+                break
+        print(players)
+        self.root.destroy()
+        self.build_menu()
+
+    def quit(self):
+        print("Quiting game")
+
+    def save_game(self):
+        pass
+
+    def load_game(self):
+        pass
+
+>>>>>>> bc732e2a89ea654c070cce937c73bf82b23f62dd
     def difficulty(self): # after Player number next windows could be diff choice following the same manner.
         self.root.destroy()  # Διαγραφη παραθυρου μενου
         self.root = tk.Tk()  # Εκκινηση παραθυρου παιχνιδιου
@@ -120,6 +225,7 @@ class GUI:
 
     def create_deck(self,mode): #creates a shuffled deck depending users choice
         self.ndeck=Deck(mode)
+<<<<<<< HEAD
         self.select_players()
 
     def play(self):
@@ -218,9 +324,17 @@ class GUI:
 
     def load_game(self):
         pass
+=======
+        self.play()
+
+>>>>>>> bc732e2a89ea654c070cce937c73bf82b23f62dd
 
 players = []
 interface = GUI()
 
 
+<<<<<<< HEAD
 # Code DUMP (don't delete may use later)
+=======
+# Code DUMP (don't delete may use later)
+>>>>>>> bc732e2a89ea654c070cce937c73bf82b23f62dd
