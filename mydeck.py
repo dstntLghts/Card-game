@@ -3,6 +3,11 @@ from unicodedata import name
 #import numpy as np
 import tkinter as tk
 import tkinter.ttk as ttk
+from tkinter import *
+from tkinter import messagebox
+import pickle
+import os
+
 
 class Card:
     def __init__(self,suit,value,id):
@@ -60,14 +65,6 @@ class Deck:
         for c in self.cards:
             c.show()
 
-    def select_cards(card_choice):
-        pass
-# Πατημα Κουμπιου
-# Επιλογη 1ης Καρτας
-# Επιλογη 2ης Καρτας
-# Έλεγχος αν ειναι ιδιες
-# Αν ΝΑΙ: Παραμενουν ανοιχτες και ποντος στον αντιστοιχο παικτη
-# Αν ΟΧΙ: Κλείνουνε και παιζει ο επομενος παικτης
 
 class Player:
     def __init__(self,name,score=0,myturn=0):
@@ -225,13 +222,26 @@ class GUI:
         print("Quiting game")
 
     def save_game(self):
-        pass
+        filename = "gamesave.pickle" #test
+        with open(filename,'r+b') as self.dbfile:
+            pickle.dump(players,self.dbfile)
+            pickle.dump(self.ndeck.cards_check,self.dbfile)
+        print("Game saved")        
+        self.dbfile.close()
 
     def load_game(self):
-        pass
+        filename = "gamesave.pickle" #test
+        self.db={}
+        if os.path.getsize(filename) > 0:
+            with open(filename,'rb') as self.dbfile:
+                self.db = pickle.load(self.dbfile)
+        else:
+            tk.messagebox.showwarning('error', 'Erroneus/empty Dictionary')
+            print("Erroneus/empty Dictionary")
+            self.db={}
+        return self.db
 
 players = []
 interface = GUI()
-
 
 # Code DUMP (don't delete may use later)
