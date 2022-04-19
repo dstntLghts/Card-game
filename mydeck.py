@@ -147,7 +147,6 @@ class GUI:
                                  command=lambda card_id=card_id,i=i,j=j:self.select_card(card_id,i,j))
                 # late binding issue
                 # using lamda to pass arguments
-
                 card.grid(row=i,column=j)
                 card_id += 1
         self.frame_a.grid(row=0,column=0)
@@ -173,6 +172,8 @@ class GUI:
 
     def select_card(self,card_id,r,c):
         # κωδικας για επιλογη καρτας
+        if self.ndeck.counter > 1:  # Removes fast pressing side effects
+            return
         if self.ndeck.cards[card_id].suit in ["♦","♥"]: # Adds red color
             card = tk.Label(self.frame_a,text=f"{self.ndeck.cards[card_id].value}{self.ndeck.cards[card_id].suit}",
                             height=3,width=5,font=("Helvetica"),fg="red")
@@ -182,13 +183,14 @@ class GUI:
         card.grid(row=r,column=c)
         self.ndeck.cards[card_id].open = True
         self.ndeck.cards_check.append(list((self.ndeck.cards[card_id],card_id,r,c)))
-        self.ndeck.counter += 1
+        self.ndeck.counter += 1 
+        print(self.ndeck.counter)
         if self.ndeck.counter == 2:
-            self.ndeck.counter = 0
-            self.root.after(600,lambda : self.evaluate_cards())
+            self.root.after(700,lambda : self.evaluate_cards())  # delay
 
     def evaluate_cards(self):
         # Κωδικας για τσεκαρισμα αν ο παικτης εχει σκοραρει
+        self.ndeck.counter = 0
         if self.ndeck.cards_check[0][0].value != self.ndeck.cards_check[1][0].value:
             card_1 = tk.Button(self.frame_a,text="🂠",height=3,width=5,font=("Helvetica"),
                                command=lambda card_id=self.ndeck.cards_check[0][1],
@@ -200,12 +202,10 @@ class GUI:
                                               c=self.ndeck.cards_check[1][3]: self.select_card(card_id,r,c))
             card_1.grid(row=self.ndeck.cards_check[0][2],column=self.ndeck.cards_check[0][3])
             card_2.grid(row=self.ndeck.cards_check[1][2],column=self.ndeck.cards_check[1][3])
-
         self.ndeck.cards_check.clear()
 
 
     def select_players(self):
-        #  Under construction
         self.root.destroy()  # Διαγραφη παραθυρου μενου
         self.root = tk.Tk()  # Εκκινηση παραθυρου παιχνιδιου
         self.root.geometry("300x400+550+250")  # Μεγεθος+θεση παραθυρου
