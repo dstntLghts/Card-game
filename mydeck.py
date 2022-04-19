@@ -1,4 +1,6 @@
 import random
+import time
+
 from unicodedata import name
 #import numpy as np
 import tkinter as tk
@@ -15,6 +17,12 @@ class Card:
         self.value=value
         self.id=id
         self.open= False # Ανοιχτή/Κλειστή
+        if value in ["J","Q","K"]:
+            self.score = 10
+        elif value == "A":
+            self.score = 1
+        else:
+            self.score = int(self.value)
 
     def show(self):
         if self.open==False:
@@ -43,14 +51,14 @@ class Deck:
             self.cols=4
         elif diff_choice=='average':
             for s in ["♠","♣","♦","♥"]:
-                for v in ("1","2","3","4","5","6","7","8","9","10"):
+                for v in ("A","2","3","4","5","6","7","8","9","10"):
                     id=id+1
                     self.cards.append(Card(s,v,id))
             self.rows=4
             self.cols=10
         elif diff_choice=='hard':
             for s in ["♠","♣","♦","♥"]:
-                for v in ("1","2","3","4","5","6","7","8","9","10",'J','Q','K'):
+                for v in ("A","2","3","4","5","6","7","8","9","10",'J','Q','K'):
                     id=id+1
                     self.cards.append(Card(s,v,id))
             self.rows=4
@@ -144,18 +152,22 @@ class GUI:
                 card_id += 1
         self.frame_a.grid(row=0,column=0)
         self.frame_b = tk.Frame(self.root)
+        p = tk.Label(self.frame_b,text="Player",font=("Arial",12),relief="groove")
+        s = tk.Label(self.frame_b,text="Score",font=("Helvetica",12),relief="groove")
+        t = tk.Label(self.frame_b,text="Turn",font=("Helvetica",12),relief="groove")
+        p.grid(row=0,column=0),s.grid(row=0,column=1),t.grid(row=0,column=2)
         for h in range (len(players)): #Players presentation
-            player = tk.Label(self.frame_b,text=f"{players[h].name}",height=3,width=5)
-            player.grid(row=h,column=0)
+            player = tk.Label(self.frame_b,text=f"{players[h].name}",height=2,font=("Helvetica",12))
+            player.grid(row=h+1,column=0)
 
-            score = tk.Label(self.frame_b,text=f"{players[h].score}",height=3,width=5)
-            score.grid(row=h,column=1)
+            score = tk.Label(self.frame_b,text=f"{players[h].score}",height=2,font=("Helvetica",12))
+            score.grid(row=h+1,column=1)
 
-            turn = tk.Label(self.frame_b,text=f"{players[h].myturn}",height=3,width=5)
-            turn.grid(row=h,column=2)
-        save_btn = ttk.Button(self.frame_b,text="Save",command=self.save_game)
-        save_btn.grid(row=5,column=2,ipadx=0,ipady=0,padx=5,pady=5)
-        self.frame_b.grid(row=0,column=1)
+            turn = tk.Label(self.frame_b,text=f"{players[h].myturn}",height=2,font=("Helvetica",12))
+            turn.grid(row=h+1,column=2)
+        save_btn = ttk.Button(self.frame_b,text="Save Game",command=self.save_game)
+        save_btn.grid(row=5,column=1,ipadx=5,ipady=5,padx=0,pady=20)
+        self.frame_b.grid(row=0,column=1,padx=20)
         self.root.mainloop()
 
 
@@ -170,18 +182,14 @@ class GUI:
         card.grid(row=r,column=c)
         self.ndeck.cards[card_id].open = True
         self.ndeck.cards_check.append(list((self.ndeck.cards[card_id],card_id,r,c)))
-        print(self.ndeck.cards_check)
         self.ndeck.counter += 1
         if self.ndeck.counter == 2:
-            self.evaluate_cards()
-
+            self.ndeck.counter = 0
+            self.root.after(600,lambda : self.evaluate_cards())
 
     def evaluate_cards(self):
         # Κωδικας για τσεκαρισμα αν ο παικτης εχει σκοραρει
-        # ΠΡΕΠΕΙ ΝΑ ΒΑΛΟΥΜΕ DELAY με το tk.after()
-        print("ENTERED CHEK")
         if self.ndeck.cards_check[0][0].value != self.ndeck.cards_check[1][0].value:
-            print("MUST HIDE")
             card_1 = tk.Button(self.frame_a,text="🂠",height=3,width=5,font=("Helvetica"),
                                command=lambda card_id=self.ndeck.cards_check[0][1],
                                               r=self.ndeck.cards_check[0][2],
@@ -192,7 +200,7 @@ class GUI:
                                               c=self.ndeck.cards_check[1][3]: self.select_card(card_id,r,c))
             card_1.grid(row=self.ndeck.cards_check[0][2],column=self.ndeck.cards_check[0][3])
             card_2.grid(row=self.ndeck.cards_check[1][2],column=self.ndeck.cards_check[1][3])
-        self.ndeck.counter = 0
+
         self.ndeck.cards_check.clear()
 
 
