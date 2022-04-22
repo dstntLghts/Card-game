@@ -1,7 +1,11 @@
 from asyncio.windows_events import NULL
 import random
 import time
+<<<<<<< HEAD
 from itertools import cycle
+=======
+
+>>>>>>> 1c8e4bd20ac043feae6afe6b14382f55d0447f52
 from unicodedata import name
 #import numpy as np
 import tkinter as tk
@@ -22,6 +26,15 @@ class Card:
             self.score = 10
         elif value == "A":
             self.score = 1
+<<<<<<< HEAD
+=======
+        else:
+            self.score = int(self.value)
+
+    def show(self):
+        if self.open==False:
+            print("id:",self.id," XX")
+>>>>>>> 1c8e4bd20ac043feae6afe6b14382f55d0447f52
         else:
             self.score = int(self.value)
 
@@ -163,9 +176,13 @@ class GUI:
             turn = tk.Label(self.frame_b,text=f"{players[h].myturn}",height=2,font=("Helvetica",12))
             turn.grid(row=h+1,column=2)
         save_btn = ttk.Button(self.frame_b,text="Save Game",command=self.save_game)
+<<<<<<< HEAD
         save_btn.grid(row=5,column=0,ipadx=5,ipady=5,padx=0,pady=20)
         quit_btn = ttk.Button(self.frame_b,text="Quit",command=self.root.destroy)
         quit_btn.grid(row=6,column=0,ipadx=5,ipady=5,padx=0,pady=20)
+=======
+        save_btn.grid(row=5,column=1,ipadx=5,ipady=5,padx=0,pady=20)
+>>>>>>> 1c8e4bd20ac043feae6afe6b14382f55d0447f52
         self.frame_b.grid(row=0,column=1,padx=20)
         self.root.mainloop()
 
@@ -187,7 +204,10 @@ class GUI:
         print(self.ndeck.counter)
         if self.ndeck.counter == 2:
             self.root.after(700,lambda : self.evaluate_cards())  # delay
+<<<<<<< HEAD
 
+=======
+>>>>>>> 1c8e4bd20ac043feae6afe6b14382f55d0447f52
 
     def evaluate_cards(self):
         # Κωδικας για τσεκαρισμα αν ο παικτης εχει σκοραρει
@@ -203,10 +223,13 @@ class GUI:
                                               c=self.ndeck.cards_check[1][3]: self.select_card(card_id,r,c))
             card_1.grid(row=self.ndeck.cards_check[0][2],column=self.ndeck.cards_check[0][3])
             card_2.grid(row=self.ndeck.cards_check[1][2],column=self.ndeck.cards_check[1][3])
+<<<<<<< HEAD
             self.ndeck.cards[self.ndeck.cards_check[0][1]].open=False #added this bc each card stayed at open=true state even when they should not
             self.ndeck.cards[self.ndeck.cards_check[1][1]].open=False
         self.a=self.ndeck.cards_check[0][0].score+self.ndeck.cards_check[1][0].score #Score from two cards for each round. future use
         self.player_turn(players,int(self.a)) #change turn and sum score function
+=======
+>>>>>>> 1c8e4bd20ac043feae6afe6b14382f55d0447f52
         self.ndeck.cards_check.clear()
         self.check_win() #Check if game is over
 
@@ -283,6 +306,7 @@ class GUI:
         print("Quiting game")
 
     def save_game(self):
+<<<<<<< HEAD
         decksave = "decksave.pickle"
         players_save = "players_save.pickle"
         with open(decksave,'wb') as self.dbfile1:
@@ -292,6 +316,14 @@ class GUI:
         print("Game saved")
         self.dbfile1.close()
         self.dbfile2.close()
+=======
+        filename = "gamesave.pickle" #test
+        with open(filename,'r+b') as self.dbfile:
+            pickle.dump(players,self.dbfile)
+            pickle.dump(self.ndeck.cards_check,self.dbfile)
+        print("Game saved")
+        self.dbfile.close()
+>>>>>>> 1c8e4bd20ac043feae6afe6b14382f55d0447f52
 
     def load_game(self):
         decksave = "decksave.pickle"
