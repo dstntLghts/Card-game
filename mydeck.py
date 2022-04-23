@@ -191,6 +191,7 @@ class GUI:
     def evaluate_cards(self):
         # Κωδικας για τσεκαρισμα αν ο παικτης εχει σκοραρει
         self.ndeck.counter = 0
+        self.a=self.ndeck.cards_check[0][0].score+self.ndeck.cards_check[1][0].score #Score from two cards for each round.
         if self.ndeck.cards_check[0][0].value != self.ndeck.cards_check[1][0].value:
             card_1 = tk.Button(self.frame_a,text="🂠",height=3,width=5,font=("Helvetica"),
                                command=lambda card_id=self.ndeck.cards_check[0][1],
@@ -204,7 +205,8 @@ class GUI:
             card_2.grid(row=self.ndeck.cards_check[1][2],column=self.ndeck.cards_check[1][3])
             self.ndeck.cards[self.ndeck.cards_check[0][1]].open=False #added this bc each card stayed at open=true state even when they should not
             self.ndeck.cards[self.ndeck.cards_check[1][1]].open=False
-        self.a=self.ndeck.cards_check[0][0].score+self.ndeck.cards_check[1][0].score #Score from two cards for each round. future use
+            self.a=0
+
         self.player_turn(players,int(self.a)) #change turn and sum score function
         self.ndeck.cards_check.clear()
         self.check_win() #Check if game is over
@@ -246,24 +248,45 @@ class GUI:
         self.root.destroy()
         self.play()
 
-    def player_turn(self,plist,s):
-        pass #Not there yet =/
-        # mylist = iter(plist)
-        # x = next(mylist)    
-        # x.myturn==1
-        # x[-1].myturn==0
-        # x[-1].score= x[-1].score+s #score sum 
+    def player_turn(self,plist,s): # player turn toggle function
+        sw = False
+        i=0
+        print(i," ",len(plist))
+        while sw==False:
+            if i==(len(plist)-1):
+                if plist[i].myturn==1:
+                    plist[i].score += s
+                    plist[i].myturn=0
+                    plist[0].myturn=1
+                    sw=True
+                else:
+                    i=0
+            elif i<(len(plist)-1):
+                if plist[i].myturn==1:
+                    plist[i].score += s
+                    plist[i].myturn=0
+                    plist[i+1].myturn=1
+                    sw=True
+                else:
+                    i=+1
+            elif i==len(plist):
+                if plist[i].myturn==1:
+                    plist[i].score += s
+                    plist[i].myturn=0
+                    plist[0].myturn=1
+                    sw=True
+                else:
+                    i=0
+   
+        for h in range (len(plist)): #Players presentation refresh
+            player = tk.Label(self.frame_b,text=f"{plist[h].name}",height=2,font=("Helvetica",12))
+            player.grid(row=h+1,column=0)
 
-        # #need new logic   
-        # for h in range (len(plist)): #Players presentation refresh
-        #     player = tk.Label(self.frame_b,text=f"{plist[h].name}",height=2,font=("Helvetica",12))
-        #     player.grid(row=h+1,column=0)
+            score = tk.Label(self.frame_b,text=f"{plist[h].score}",height=2,font=("Helvetica",12))
+            score.grid(row=h+1,column=1)
 
-        #     score = tk.Label(self.frame_b,text=f"{plist[h].score}",height=2,font=("Helvetica",12))
-        #     score.grid(row=h+1,column=1)
-
-        #     turn = tk.Label(self.frame_b,text=f"{plist[h].myturn}",height=2,font=("Helvetica",12))
-        #     turn.grid(row=h+1,column=2)
+            turn = tk.Label(self.frame_b,text=f"{plist[h].myturn}",height=2,font=("Helvetica",12))
+            turn.grid(row=h+1,column=2)
 
     # Check if the game is over
     def check_win(self):
@@ -275,8 +298,7 @@ class GUI:
             
         print(s)
         if s==len(self.ndeck.cards):
-            tk.messagebox.showinfo('information','GAME OVER')
-            self.build_menu() #when score if fixed will add information
+            tk.messagebox.showinfo('information','GAME OVER') # will add information
 
     def quit(self):
         print("Quiting game")
