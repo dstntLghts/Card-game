@@ -207,7 +207,7 @@ class GUI:
             self.ndeck.cards[self.ndeck.cards_check[1][1]].open=False
             self.a=0
 
-        self.player_turn(players,int(self.a)) #change turn and sum score function
+        self.player_turn(players,int(self.a),self.ndeck.cards_check) #change turn and sum score function
         self.ndeck.cards_check.clear()
         self.check_win(players) #Check if game is over
 
@@ -246,35 +246,65 @@ class GUI:
         self.root.destroy()
         self.play(players)
 
-    def player_turn(self,plist,s): # player turn toggle function
+    def player_turn(self,plist,s,dlist): # player turn toggle function
         sw = False
         i=0
-        print(i," ",len(plist))
         while sw==False:
-            if i==(len(plist)-1):
+            if  dlist[0][0].value=='J' and dlist[1][0].value=='J': # Wildcard "JJ"
                 if plist[i].myturn==1:
-                    plist[i].score += s
-                    plist[i].myturn=0
-                    plist[0].myturn=1
-                    sw=True
-                else:
-                    i=0
-            elif i<(len(plist)-1):
-                if plist[i].myturn==1:
-                    plist[i].score += s
-                    plist[i].myturn=0
-                    plist[i+1].myturn=1
-                    sw=True
+                   plist[i].score += s
+                   sw=True
                 else:
                     i=+1
-            elif i==len(plist):
-                if plist[i].myturn==1:
-                    plist[i].score += s
-                    plist[i].myturn=0
-                    plist[0].myturn=1
-                    sw=True
-                else:
-                    i=0
+            # elif dlist[0][0].value=='K' and dlist[1][0].value=='K': # Wildcard "KK" still working on it!
+            #     if len(plist)==1:
+            #         if plist[i].myturn==1:
+            #             plist[i].score += s
+            #             sw=True
+            #         else:
+            #             i=+1
+            #     else:
+            #         if i<(len(plist)-2):
+            #             if plist[i].myturn==1:
+            #                 plist[i].score += s
+            #                 plist[i].myturn=0
+            #                 plist[i+2].myturn=1
+            #                 sw=True
+            #             else:
+            #                 i=+1
+            #         elif i==(len(plist)-1):
+            #             if plist[i].myturn==1:
+            #                 plist[i].score += s
+            #                 plist[i].myturn=0
+            #                 plist[1].myturn=1
+            #                 sw=True
+            #             else:
+            #                 i=1
+            #         else:
+            #             if plist[i].myturn==1:
+            #                plist[i].score += s
+            #                plist[i].myturn=0
+            #                plist[2].myturn=1
+            #                sw=True
+            #             else:
+            #                i=2
+            else: #Not wildcards
+                if i==(len(plist)-1):
+                    if plist[i].myturn==1:
+                        plist[i].score += s
+                        plist[i].myturn=0
+                        plist[0].myturn=1
+                        sw=True
+                    else:
+                        i=0
+                elif i<(len(plist)-1):
+                    if plist[i].myturn==1:
+                        plist[i].score += s
+                        plist[i].myturn=0
+                        plist[i+1].myturn=1
+                        sw=True
+                    else:
+                        i=+1
    
         for h in range (len(plist)): #Players presentation refresh
             player = tk.Label(self.frame_b,text=f"{plist[h].name}",height=2,font=("Helvetica",12))
