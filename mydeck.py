@@ -123,7 +123,7 @@ class GUI:
         self.ndeck=Deck(mode)
         self.select_players()
 
-    def play(self):
+    def play(self,players):
         print("Game Started")
         self.root = tk.Tk()  # Εκκινηση παραθυρου παιχνιδιου
         self.root.title("Cards Game")
@@ -135,7 +135,7 @@ class GUI:
         for i in range(self.ndeck.rows):
             for j in range (self.ndeck.cols):
                 card = tk.Button(self.frame_a,text="🂠",height=3,width=5,font=("Helvetica"),
-                                 command=lambda card_id=card_id,i=i,j=j:self.select_card(card_id,i,j))
+                                 command=lambda card_id=card_id,i=i,j=j:self.select_card(card_id,i,j,players))
                 if self.ndeck.cards[card_id].open==True: #This section is added in order to load open cards, buggy visual
                     if self.ndeck.cards[card_id].suit in ["♦","♥"]: # Adds red color
                         card = tk.Label(self.frame_a,text=f"{self.ndeck.cards[card_id].value}{self.ndeck.cards[card_id].suit}",
@@ -170,7 +170,7 @@ class GUI:
         self.root.mainloop()
 
 
-    def select_card(self,card_id,r,c):
+    def select_card(self,card_id,r,c,players):
         # κωδικας για επιλογη καρτας
         if self.ndeck.counter > 1:  # Removes fast pressing side effects
             return
@@ -186,9 +186,9 @@ class GUI:
         self.ndeck.counter += 1 
         print(self.ndeck.counter)
         if self.ndeck.counter == 2:
-            self.root.after(700,lambda : self.evaluate_cards())  # delay
+            self.root.after(700,lambda : self.evaluate_cards(players))  # delay
 
-    def evaluate_cards(self):
+    def evaluate_cards(self,players):
         # Κωδικας για τσεκαρισμα αν ο παικτης εχει σκοραρει
         self.ndeck.counter = 0
         self.a=self.ndeck.cards_check[0][0].score+self.ndeck.cards_check[1][0].score #Score from two cards for each round.
@@ -196,11 +196,11 @@ class GUI:
             card_1 = tk.Button(self.frame_a,text="🂠",height=3,width=5,font=("Helvetica"),
                                command=lambda card_id=self.ndeck.cards_check[0][1],
                                               r=self.ndeck.cards_check[0][2],
-                                              c=self.ndeck.cards_check[0][3]: self.select_card(card_id,r,c))
+                                              c=self.ndeck.cards_check[0][3]: self.select_card(card_id,r,c,players))
             card_2 = tk.Button(self.frame_a,text="🂠",height=3,width=5,font=("Helvetica"),
                                command=lambda card_id=self.ndeck.cards_check[1][1],
                                               r=self.ndeck.cards_check[1][2],
-                                              c=self.ndeck.cards_check[1][3]: self.select_card(card_id,r,c))
+                                              c=self.ndeck.cards_check[1][3]: self.select_card(card_id,r,c,players))
             card_1.grid(row=self.ndeck.cards_check[0][2],column=self.ndeck.cards_check[0][3])
             card_2.grid(row=self.ndeck.cards_check[1][2],column=self.ndeck.cards_check[1][3])
             self.ndeck.cards[self.ndeck.cards_check[0][1]].open=False #added this bc each card stayed at open=true state even when they should not
@@ -210,8 +210,6 @@ class GUI:
         self.player_turn(players,int(self.a)) #change turn and sum score function
         self.ndeck.cards_check.clear()
         self.check_win() #Check if game is over
-
-
 
     def select_players(self):
         self.root.destroy()  # Διαγραφη παραθυρου μενου
@@ -246,7 +244,7 @@ class GUI:
         players[0].myturn=1
         print(players)
         self.root.destroy()
-        self.play()
+        self.play(players)
 
     def player_turn(self,plist,s): # player turn toggle function
         sw = False
@@ -336,7 +334,7 @@ class GUI:
             self.db2={}
         players=self.db2
         self.root.destroy()
-        self.play()
+        self.play(players)
 
 players = []
 interface = GUI()
