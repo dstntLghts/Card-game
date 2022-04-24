@@ -138,10 +138,10 @@ class GUI:
                                  command=lambda card_id=card_id,i=i,j=j:self.select_card(card_id,i,j,players))
                 if self.ndeck.cards[card_id].open==True: #This section is added in order to load open cards, buggy visual
                     if self.ndeck.cards[card_id].suit in ["♦","♥"]: # Adds red color
-                        card = tk.Label(self.frame_a,text=f"{self.ndeck.cards[card_id].value}{self.ndeck.cards[card_id].suit}",
+                        card = tk.Button(self.frame_a,text=f"{self.ndeck.cards[card_id].value}{self.ndeck.cards[card_id].suit}",
                                 height=3,width=5,font=("Helvetica"),fg="red")
                     else:
-                        card = tk.Label(self.frame_a,text=f"{self.ndeck.cards[card_id].value}{self.ndeck.cards[card_id].suit}",
+                        card = tk.Button(self.frame_a,text=f"{self.ndeck.cards[card_id].value}{self.ndeck.cards[card_id].suit}",
                                 height=3,width=5,font=("Helvetica"))
                 # late binding issue
                 # using lamda to pass arguments
@@ -209,7 +209,7 @@ class GUI:
 
         self.player_turn(players,int(self.a)) #change turn and sum score function
         self.ndeck.cards_check.clear()
-        self.check_win() #Check if game is over
+        self.check_win(players) #Check if game is over
 
     def select_players(self):
         self.root.destroy()  # Διαγραφη παραθυρου μενου
@@ -287,16 +287,22 @@ class GUI:
             turn.grid(row=h+1,column=2)
 
     # Check if the game is over
-    def check_win(self):
+    def check_win(self,players):
         print(len(self.ndeck.cards))
         s=0
+        k=0
+        winner=NULL
         for i in range(0,len(self.ndeck.cards)):
            if self.ndeck.cards[i].open==True:
             s +=1
             
         print(s)
         if s==len(self.ndeck.cards):
-            tk.messagebox.showinfo('information','GAME OVER') # will add information
+            for p in range(0,len(players)):
+                if players[p].score>k:
+                    players[p].score=k
+                    winner=players[p]
+            tk.messagebox.showinfo('information','GAME OVER!!! Winner is:'+winner.name) # will add information
 
     def quit(self):
         print("Quiting game")
