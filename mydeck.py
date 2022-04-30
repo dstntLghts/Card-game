@@ -307,6 +307,7 @@ class GUI:
             else:
                  tk.messagebox.showinfo('information','GAME OVER!!! Draw between:' + str([name for name in winners])) #will make this better!
 
+
     def quit(self):
         print("Quiting game")
 
