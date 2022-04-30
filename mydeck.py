@@ -283,22 +283,19 @@ class GUI:
 
     # Check if the game is over
     def check_win(self,players):
-        print(len(self.ndeck.cards))
         s=0
         k=0
-        j=0
         winners=[]
         for i in range(0,len(self.ndeck.cards)):
            if self.ndeck.cards[i].open==True:
             s +=1
 
-        print(s)
-        if s==len(self.ndeck.cards):
+        if s==len(self.ndeck.cards): #finds top score
             for p in range(0,len(players)):
                 if players[p].score>k:
                     k=players[p].score
 
-            for i in range(0,len(players)):
+            for i in range(0,len(players)): #add players with top score to winners list
                 if players[i].score==k:
                     winners.append(players[i].name)
         
