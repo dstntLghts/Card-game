@@ -308,16 +308,21 @@ class GUI:
     def quit(self):
         print("Quiting game")
 
-    def save_game(self): #will add clear if save already exists
+    def save_game(self): #file clearance if save already exists
         decksave = "decksave.pickle"
+        empty_list = []
         players_save = "players_save.pickle"
         with open(decksave,'wb') as self.dbfile1:
+            if os.path.getsize(decksave) > 0:
+                pickle.dump(empty_list, self.dbfile1)
             pickle.dump(self.ndeck,self.dbfile1)
-        with open(players_save,'wb') as self.dbfile2:
-            pickle.dump(players,self.dbfile2)
-        print("Game saved")
         self.dbfile1.close()
+        with open(players_save,'wb') as self.dbfile2:
+            if os.path.getsize(players_save) > 0:
+                pickle.dump(empty_list, self.dbfile2)
+            pickle.dump(players,self.dbfile2)
         self.dbfile2.close()
+        print("Game saved")
 
     def load_game(self):
         decksave = "decksave.pickle"
