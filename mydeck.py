@@ -17,6 +17,8 @@ class Card:
         self.suit=suit
         self.value=value
         self.id=id
+        self.row=0
+        self.col=0
         self.open= False # Ανοιχτή/Κλειστή
         if value in ["J","Q","K"]:
             self.score = 10
@@ -28,12 +30,16 @@ class Card:
 class Deck:
     def __init__(self,difficulty):
         self.cards=[]
+        self.closed_cards=[]
         self.cards_check = []
         self.counter = 0
         self.rows=0
         self.cols=0
         self.build(difficulty)
         self.shuffle()
+        self.coordinate_cards()
+
+
 
     def build(self,diff_choice):
         id=0
@@ -42,6 +48,7 @@ class Deck:
                 for v in ("10",'J','Q','K'):
                     id=id+1
                     self.cards.append(Card(s,v,id))
+                    self.closed_cards.append(Card(s,v,id))
             self.rows=4
             self.cols=4
         elif diff_choice=='average':
@@ -49,13 +56,14 @@ class Deck:
                 for v in ("A","2","3","4","5","6","7","8","9","10"):
                     id=id+1
                     self.cards.append(Card(s,v,id))
+                    self.closed_cards.append(Card(s,v,id))
             self.rows=4
             self.cols=10
         elif diff_choice=='hard':
             for s in ["♠","♣","♦","♥"]:
                 for v in ("A","2","3","4","5","6","7","8","9","10",'J','Q','K'):
-                    id=id+1
                     self.cards.append(Card(s,v,id))
+                    self.closed_cards.append(Card(s,v,id))
             self.rows=4
             self.cols=13
 
@@ -64,13 +72,27 @@ class Deck:
             r=random.randint(0,i)
             self.cards[i],self.cards[r]=self.cards[r],self.cards[i]
 
+    def coordinate_cards(self):
+        c=0 # counter
+        for i in range(self.rows):
+            for j in range(self.cols):
+                self.cards[c].row = i
+                self.cards[c].col = j
+                c+=1
+
+
 
 class Player:
-    def __init__(self,name,score=0,myturn=" "):
+    def __init__(self,name,score=0,myturn=False):
         self.name = name
         self.score = score
         self.myturn = myturn
 
+class Bot:
+    def __init__(self,score=0,myturn=False):
+        self.name = "BOT"
+        self.score = score
+        self.myturn = myturn
 
 class GUI:
 
@@ -79,6 +101,7 @@ class GUI:
         self.root = None
         self.frame_a = None
         self.frame_b = None
+        self.bot = Bot()
         self.build_menu()
 
     def build_menu(self):
@@ -131,21 +154,38 @@ class GUI:
         self.root.geometry("+400+250")
         self.frame_a = tk.Frame(self.root)
         card_id = 0
-        for i in range(self.ndeck.rows):
-            for j in range (self.ndeck.cols):
-                card = tk.Button(self.frame_a,text="🂠",height=3,width=5,font=("Helvetica"),
-                                 command=lambda card_id=card_id,i=i,j=j:self.select_card(card_id,i,j,players))
-                if self.ndeck.cards[card_id].open==True: #This section is added in order to load open cards, buggy visual
-                    if self.ndeck.cards[card_id].suit in ["♦","♥"]: # Adds red color
-                        card = tk.Button(self.frame_a,text=f"{self.ndeck.cards[card_id].value}{self.ndeck.cards[card_id].suit}",
-                                height=3,width=5,font=("Helvetica"),state="disabled",disabledforeground="red")
-                    else:
-                        card = tk.Button(self.frame_a,text=f"{self.ndeck.cards[card_id].value}{self.ndeck.cards[card_id].suit}",
-                                height=3,width=5,font=("Helvetica"),state="disabled",disabledforeground="black")
-                # late binding issue
-                # using lamda to pass arguments
-                card.grid(row=i,column=j)
-                card_id += 1
+        if type(players[1]) is Bot:
+            for i in range(self.ndeck.rows):
+                for j in range (self.ndeck.cols):
+                    card = tk.Button(self.frame_a,text="🂠",height=3,width=5,font=("Helvetica"),
+                                     command=lambda card_id=card_id,row=i,col=j:self.select_card_bot(card_id,row,col,players))
+                    if self.ndeck.cards[card_id].open==True: #This section is added in order to load open cards, buggy visual
+                        if self.ndeck.cards[card_id].suit in ["♦","♥"]: # Adds red color
+                            card = tk.Button(self.frame_a,text=f"{self.ndeck.cards[card_id].value}{self.ndeck.cards[card_id].suit}",
+                                    height=3,width=5,font=("Helvetica"),state="disabled",disabledforeground="red")
+                        else:
+                            card = tk.Button(self.frame_a,text=f"{self.ndeck.cards[card_id].value}{self.ndeck.cards[card_id].suit}",
+                                    height=3,width=5,font=("Helvetica"),state="disabled",disabledforeground="black")
+                    # late binding issue
+                    # using lamda to pass arguments
+                    card.grid(row=i,column=j)
+                    card_id += 1
+        else:
+            for i in range(self.ndeck.rows):
+                for j in range (self.ndeck.cols):
+                    card = tk.Button(self.frame_a,text="🂠",height=3,width=5,font=("Helvetica"),
+                                     command=lambda card_id=card_id,row=i,col=j:self.select_card(card_id,row,col,players))
+                    if self.ndeck.cards[card_id].open==True: #This section is added in order to load open cards, buggy visual
+                        if self.ndeck.cards[card_id].suit in ["♦","♥"]: # Adds red color
+                            card = tk.Button(self.frame_a,text=f"{self.ndeck.cards[card_id].value}{self.ndeck.cards[card_id].suit}",
+                                             height=3,width=5,font=("Helvetica"),state="disabled",disabledforeground="red")
+                        else:
+                            card = tk.Button(self.frame_a,text=f"{self.ndeck.cards[card_id].value}{self.ndeck.cards[card_id].suit}",
+                                             height=3,width=5,font=("Helvetica"),state="disabled",disabledforeground="black")
+                    # late binding issue
+                    # using lamda to pass arguments
+                    card.grid(row=i,column=j)
+                    card_id += 1
         self.frame_a.grid(row=0,column=0)
         self.frame_b = tk.Frame(self.root)
         p = tk.Label(self.frame_b,text="Player",font=("Arial",12),background="#d1d1d1",)
@@ -161,7 +201,7 @@ class GUI:
             score = tk.Label(self.frame_b,text=f"{players[h].score}",height=2,font=("Helvetica",12))
             score.grid(row=h+1,column=1)
 
-            turn = tk.Label(self.frame_b,text=f"{players[h].myturn}",height=2,font=("Helvetica",12))
+            turn = tk.Label(self.frame_b,text=f"{'◄' if players[h].myturn else ' '}",height=2,font=("Helvetica",12))
             turn.grid(row=h+1,column=2)
         save_btn = ttk.Button(self.frame_b,text="Save Game",command=self.save_game)
         save_btn.grid(row=5,column=0,ipadx=5,ipady=5,padx=0,pady=20)
@@ -188,27 +228,118 @@ class GUI:
         if self.ndeck.counter == 2:
             self.root.after(700,lambda : self.evaluate_cards(players))  # delay
 
+
+    def select_card_bot(self,card_id,r,c,players):
+        # κωδικας για επιλογη καρτας
+        if self.ndeck.counter > 1:  # Prevents 3rd card to be pressed
+            return 0
+        if self.bot.myturn:
+            return 0
+        if self.ndeck.cards[card_id].suit in ["♦","♥"]: # Adds red color
+            card = tk.Button(self.frame_a,text=f"{self.ndeck.cards[card_id].value}{self.ndeck.cards[card_id].suit}",
+                             height=3,width=5,font=("Helvetica"),disabledforeground="red",state="disabled")
+        else:
+            card = tk.Button(self.frame_a,text=f"{self.ndeck.cards[card_id].value}{self.ndeck.cards[card_id].suit}",
+                             height=3,width=5,font=("Helvetica"),disabledforeground="black",state="disabled")
+        card.grid(row=r,column=c)
+        self.ndeck.cards[card_id].open = True
+        self.ndeck.cards_check.append(list((self.ndeck.cards[card_id],card_id,r,c)))
+        self.ndeck.counter += 1
+        if self.ndeck.counter == 2:
+            self.root.after(700,lambda : self.evaluate_cards_bot(players))  # delay
+
+    def bot_choose_card(self):
+        print("HELLO FROM BOT")
+        print(len(self.ndeck.closed_cards))
+
+        num = random.randint(0,16)
+        flag = False
+        while not flag:
+            for i in range(0,len(self.ndeck.closed_cards)):
+                if num == self.ndeck.closed_cards[i].id:
+                    flag = True
+
+        card_id = num
+
+        if self.ndeck.cards[card_id].suit in ["♦","♥"]: # Adds red color
+            card = tk.Button(self.frame_a,text=f"{self.ndeck.cards[card_id].value}{self.ndeck.cards[card_id].suit}",
+                             height=3,width=5,font=("Helvetica"),disabledforeground="red",state="disabled")
+        else:
+            card = tk.Button(self.frame_a,text=f"{self.ndeck.cards[card_id].value}{self.ndeck.cards[card_id].suit}",
+                             height=3,width=5,font=("Helvetica"),disabledforeground="black",state="disabled")
+        card.grid(row=self.ndeck.cards[card_id].row,column=self.ndeck.cards[card_id].col)
+
+
+
+    def evaluate_cards_bot(self,players):
+        # Κωδικας για τσεκαρισμα αν ο παικτης εχει σκοραρει
+        self.ndeck.counter = 0
+        card1_obj = self.ndeck.cards_check[0][0]
+        card2_obj = self.ndeck.cards_check[1][0]
+        card1_id = self.ndeck.cards_check[0][1]
+        card2_id = self.ndeck.cards_check[1][1]
+        card1_row = self.ndeck.cards_check[0][2]
+        card2_row = self.ndeck.cards_check[1][2]
+        card1_col = self.ndeck.cards_check[0][3]
+        card2_col = self.ndeck.cards_check[1][3]
+
+        self.score_stack= card1_obj.score + card2_obj.score #Score from two cards for each round.
+        if card1_obj.value != card2_obj.value:
+            card_1 = tk.Button(self.frame_a,text="🂠",height=3,width=5,font=("Helvetica"),
+                               command=lambda card_id=card1_id,
+                                              r=card1_row,
+                                              c=card1_col: self.select_card_bot(card_id,r,c,players))
+            card_2 = tk.Button(self.frame_a,text="🂠",height=3,width=5,font=("Helvetica"),
+                               command=lambda card_id=card2_id,
+                                              r=card2_row,
+                                              c=card2_col: self.select_card_bot(card_id,r,c,players))
+            card_1.grid(row=card1_row,column=card1_col)
+            card_2.grid(row=card2_row,column=card2_col)
+            self.ndeck.cards[card1_id].open=False #added this bc each card stayed at open=true state even when they should not
+            self.ndeck.cards[card2_id].open=False
+            self.score_stack=0
+        else:
+            self.ndeck.closed_cards.pop(card1_id)
+            self.ndeck.closed_cards.pop(card2_id)
+        self.player_turn(players, int(self.score_stack), self.ndeck.cards_check) #change turn and sum score function
+        self.ndeck.cards_check.clear()
+        if self.bot.myturn:
+            self.root.after(1000,self.bot_choose_card())
+            self.root.after(1000,self.bot_choose_card())
+        self.check_win(players) #Check if game is over
+
+
     def evaluate_cards(self,players):
         # Κωδικας για τσεκαρισμα αν ο παικτης εχει σκοραρει
         self.ndeck.counter = 0
-        self.score_stack= self.ndeck.cards_check[0][0].score + self.ndeck.cards_check[1][0].score #Score from two cards for each round.
-        if self.ndeck.cards_check[0][0].value != self.ndeck.cards_check[1][0].value:
+        card1_obj = self.ndeck.cards_check[0][0]
+        card2_obj = self.ndeck.cards_check[1][0]
+        card1_id = self.ndeck.cards_check[0][1]
+        card2_id = self.ndeck.cards_check[1][1]
+        card1_row = self.ndeck.cards_check[0][2]
+        card2_row = self.ndeck.cards_check[1][2]
+        card1_col = self.ndeck.cards_check[0][3]
+        card2_col = self.ndeck.cards_check[1][3]
+
+        self.score_stack= card1_obj.score + card2_obj.score #Score from two cards for each round.
+        if card1_obj.value != card2_obj.value:
             card_1 = tk.Button(self.frame_a,text="🂠",height=3,width=5,font=("Helvetica"),
-                               command=lambda card_id=self.ndeck.cards_check[0][1],
-                                              r=self.ndeck.cards_check[0][2],
-                                              c=self.ndeck.cards_check[0][3]: self.select_card(card_id,r,c,players))
+                               command=lambda card_id=card1_id,
+                                              r=card1_row,
+                                              c=card1_col: self.select_card(card_id,r,c,players))
             card_2 = tk.Button(self.frame_a,text="🂠",height=3,width=5,font=("Helvetica"),
-                               command=lambda card_id=self.ndeck.cards_check[1][1],
-                                              r=self.ndeck.cards_check[1][2],
-                                              c=self.ndeck.cards_check[1][3]: self.select_card(card_id,r,c,players))
-            card_1.grid(row=self.ndeck.cards_check[0][2],column=self.ndeck.cards_check[0][3])
-            card_2.grid(row=self.ndeck.cards_check[1][2],column=self.ndeck.cards_check[1][3])
-            self.ndeck.cards[self.ndeck.cards_check[0][1]].open=False #added this bc each card stayed at open=true state even when they should not
-            self.ndeck.cards[self.ndeck.cards_check[1][1]].open=False
+                               command=lambda card_id=card2_id,
+                                              r=card2_row,
+                                              c=card2_col: self.select_card(card_id,r,c,players))
+            card_1.grid(row=card1_row,column=card1_col)
+            card_2.grid(row=card2_row,column=card2_col)
+            self.ndeck.cards[card1_id].open=False #added this bc each card stayed at open=true state even when they should not
+            self.ndeck.cards[card2_id].open=False
             self.score_stack=0
         self.player_turn(players, int(self.score_stack), self.ndeck.cards_check) #change turn and sum score function
         self.ndeck.cards_check.clear()
         self.check_win(players) #Check if game is over
+
 
     def select_players(self):
         self.root.destroy()  # Διαγραφη παραθυρου μενου
@@ -233,14 +364,14 @@ class GUI:
         players.clear()  # Remove previous players
         if num==1:
             players.append(Player("Player_1"))
-            players.append(Player("BOT"))
+            players.append(self.bot)
         else:
             for i in range(2,5):  # Adds Players
                 if i == num:
                     for j in range(i):
                         players.append(Player(f"Player_{j+1}"))
                     break
-        players[0].myturn="◄"
+        players[0].myturn=True
         self.root.destroy()
         self.play(players)
 
@@ -249,26 +380,26 @@ class GUI:
         # Προτεινω αυτη την προσεγγιση ειναι πιο απλοικη
 
         for i in range(len(plist)):
-            if plist[i].myturn=="◄":   # if player turn
+            if plist[i].myturn==True:   # if player turn
                 plist[i].score += s  # adds score
                 if  dlist[0][0].value=='J' and dlist[1][0].value=='J': # Wildcard "JJ"
                     # player doesnt lose turn
                     break
-                plist[i].myturn=" "   # loses turn
+                plist[i].myturn= False  # loses turn
                 if dlist[0][0].value=='K' and dlist[1][0].value=='K': # Wildcard "KK"
                     if i == (len(plist)-1):  # if last player
-                        plist[1].myturn = "◄"  # second player plays
+                        plist[1].myturn = True  # second player plays
                         break
                     if i == (len(plist)-2):  # if second last player
-                        plist[0].myturn = "◄"  # first player plays
+                        plist[0].myturn = True  # first player plays
                         break
                     else:
-                        plist[i+2].myturn = "◄"
+                        plist[i+2].myturn = True
                         break
                 if i == (len(plist)-1):  # if last player
-                    plist[0].myturn = "◄"  # first player plays
+                    plist[0].myturn = True  # first player plays
                 else:
-                    plist[i+1].myturn = "◄"
+                    plist[i+1].myturn = True
                 break
         
         for h in range (len(plist)): #Players presentation refresh
@@ -278,7 +409,7 @@ class GUI:
             score = tk.Label(self.frame_b,text=f"{plist[h].score}",height=2,font=("Helvetica",12))
             score.grid(row=h+1,column=1)
 
-            turn = tk.Label(self.frame_b,text=f"{plist[h].myturn}",height=2,font=("Helvetica",12))
+            turn = tk.Label(self.frame_b,text=f"{'◄' if plist[h].myturn else ' '} ",height=2,font=("Helvetica",12))
             turn.grid(row=h+1,column=2)
 
     # Check if the game is over
