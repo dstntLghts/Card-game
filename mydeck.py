@@ -62,6 +62,7 @@ class Deck:
         elif diff_choice=='hard':
             for s in ["♠","♣","♦","♥"]:
                 for v in ("A","2","3","4","5","6","7","8","9","10",'J','Q','K'):
+                    id=id+1
                     self.cards.append(Card(s,v,id))
                     self.closed_cards.append(Card(s,v,id))
             self.rows=4
