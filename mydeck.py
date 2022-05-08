@@ -482,5 +482,4 @@ class GUI:
 
 players = []
 interface = GUI()
-
 # Code DUMP (don't delete may use later)
