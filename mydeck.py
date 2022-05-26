@@ -576,4 +576,8 @@ class GUI:
         
         
 players = []
+<<<<<<< HEAD
 interface = GUI()
+=======
+interface = GUI()
+>>>>>>> 863c50938e4b7c985e176a4017246819c3dd11b5
