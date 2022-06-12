@@ -131,7 +131,7 @@ class Bot:
             if xdeck.cards[rand_num].open is False:
                 for x in self.memory:
                     stored_id.append(x.id)
-                if rand_num not in stored:
+                if rand_num not in stored_id:
                     break
         xdeck.cards[rand_num].open = True
         print("->Random Play")
