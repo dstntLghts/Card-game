@@ -111,7 +111,7 @@ class Bot:
         last_card = None
         for x in self.memory:
             last_card = x
-        for i in range(len(self.memory)-2):
+        for i in range(len(self.memory)-1):
             if self.memory[i].value == last_card.value:
                 if self.memory[i].suit != last_card.suit:
                     id1 = self.memory[i].id
