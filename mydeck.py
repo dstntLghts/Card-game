@@ -91,12 +91,11 @@ class Bot:
     def search_intelligent(self,xdeck : Deck):
         break2 = False
         for i in range(len(self.memory)-1):
-            for j in range(i,len(self.memory)-1):
+            for j in range(i,len(self.memory)-2):
                 if self.memory[i].value == self.memory[j+1].value:
-                    id1 = self.memory[i].id
-                    id2 = self.memory[j+1].id
                     if self.memory[i].suit != self.memory[j+1].suit:
-
+                        id1 = self.memory[i].id
+                        id2 = self.memory[j+1].id
                         if xdeck.cards[id1].open is False and xdeck.cards[id2].open is False:
                             print(xdeck.cards[id1].open)
                             self.cards2play.append(xdeck.cards[id1])
@@ -107,6 +106,19 @@ class Bot:
             if break2:
                 break
         return
+
+    def search_intelligent_2nd(self,xdeck : Deck):
+        last_card = None
+        for x in self.memory:
+            last_card = x
+        for i in range(len(self.memory)-2):
+            if self.memory[i].value == last_card.value:
+                if self.memory[i].suit != last_card.suit:
+                    id1 = self.memory[i].id
+                    if xdeck.cards[id1].open is False:
+                        self.cards2play.append(xdeck.cards[id1])
+                        self.play_from_memory = True
+                        break
 
     def intelligent_play(self,card: Card):
         print("-->Memory Play")
@@ -191,10 +203,10 @@ class GUI:
                     if self.xdeck.cards[card_id].open==True: #This section is added in order to load open cards, buggy visual
                         if self.xdeck.cards[card_id].suit in ["♦","♥"]: # Adds red color
                             card = tk.Button(self.frame_a,text=f"{self.xdeck.cards[card_id].value}{self.xdeck.cards[card_id].suit}",
-                                    height=3,width=5,font=("Helvetica"),state="disabled",disabledforeground="red")
+                                             height=3,width=5,font=("Helvetica"),state="disabled",disabledforeground="red")
                         else:
                             card = tk.Button(self.frame_a,text=f"{self.xdeck.cards[card_id].value}{self.xdeck.cards[card_id].suit}",
-                                    height=3,width=5,font=("Helvetica"),state="disabled",disabledforeground="black")
+                                             height=3,width=5,font=("Helvetica"),state="disabled",disabledforeground="black")
                     # late binding issue
                     # using lamda to pass arguments
                     card.grid(row=self.xdeck.cards[card_id].row,column=self.xdeck.cards[card_id].col)
@@ -249,10 +261,10 @@ class GUI:
             return
         if self.xdeck.cards[card_id].suit in ["♦","♥"]: # Adds red color
             card = tk.Button(self.frame_a,text=f"{self.xdeck.cards[card_id].value}{self.xdeck.cards[card_id].suit}",
-                            height=3,width=5,font=("Helvetica"),disabledforeground="red",state="disabled")
+                             height=3,width=5,font=("Helvetica"),disabledforeground="red",state="disabled")
         else:
             card = tk.Button(self.frame_a,text=f"{self.xdeck.cards[card_id].value}{self.xdeck.cards[card_id].suit}",
-                            height=3,width=5,font=("Helvetica"),disabledforeground="black",state="disabled")
+                             height=3,width=5,font=("Helvetica"),disabledforeground="black",state="disabled")
         card.grid(row=r,column=c)
         self.xdeck.cards[card_id].open = True
         self.xdeck.cards_check.append(list((self.xdeck.cards[card_id],card_id,r,c)))
@@ -262,23 +274,22 @@ class GUI:
 
     def bot_select_card(self, card_id):
         # κωδικας για επιλογη καρτας
-        if self.xdeck.counter > 1:  # Prevents 3rd card to be pressed
+        if self.xdeck.counter > 1:  # Αποτροπή σφάλματος αν ο παίκτης πατήσει 3η κάρτα
             return 0
-        if self.bot.myturn:
+        if self.bot.myturn: # Αποτροπή σφάλματος όταν παίζει το bot να μην παίζει ο παίκτης
             return 0
         card = self.xdeck.cards[card_id]
         if card.suit in ["♦","♥"]: # Adds red color
             button = tk.Button(self.frame_a,text=f"{card.value}{card.suit}",
-                             height=3,width=5,font=("Helvetica"),disabledforeground="red",state="disabled")
+                               height=3,width=5,font=("Helvetica"),disabledforeground="red",state="disabled")
         else:
             button = tk.Button(self.frame_a,text=f"{card.value}{card.suit}",
-                             height=3,width=5,font=("Helvetica"),disabledforeground="black",state="disabled")
+                               height=3,width=5,font=("Helvetica"),disabledforeground="black",state="disabled")
         button.grid(row=card.row,column=card.col)
         card.open = True
 
         self.xdeck.cards_check.append(list((card,card_id,card.row,card.col)))
         self.bot.memory.append(card)
-
         self.xdeck.counter += 1
         if self.xdeck.counter == 2:
             self.root.after(1500, lambda : self.bot_evaluate_cards())  # delay
@@ -309,7 +320,7 @@ class GUI:
             for x in [card1_id,card2_id]:
                 if self.xdeck.cards[x].suit in ["♦","♥"]: # Adds red color
                     card = tk.Button(self.frame_a,text=f"{self.xdeck.cards[x].value}{self.xdeck.cards[x].suit}",
-                                 height=3,width=5,font=("Helvetica"),disabledforeground="red",state="disabled")
+                                     height=3,width=5,font=("Helvetica"),disabledforeground="red",state="disabled")
                 else:
                     card = tk.Button(self.frame_a,text=f"{self.xdeck.cards[x].value}{self.xdeck.cards[x].suit}",
                                      height=3,width=5,font=("Helvetica"),disabledforeground="black",state="disabled")
@@ -317,17 +328,15 @@ class GUI:
                 self.xdeck.cards[card1_id].open=True # close cards
                 self.xdeck.cards[card2_id].open=True
         self.bot_player_turn(players, int(self.score_stack), self.xdeck.cards_check) #change turn and sum score function
-        self.xdeck.cards_check.clear()   # removes cards
-        if self.check_win(players): #Check if game is over
-            return  # prevents crashing the game
+        self.xdeck.cards_check.clear()   # remove cards
+        self.check_win(players)
         if players[1].myturn:
-            self.root.after(600,lambda : self.bot_choose_card())  # Using lambda otherwise delay wont work as expected
+                self.root.after(600,lambda : self.bot_choose_card())  # Using lambda otherwise delay wont work as expected
 
     def bot_choose_card(self):
         self.xdeck.counter += 1
-        
         while True:
-            if len(self.bot.memory) >  5:
+            if len(self.bot.memory) > 5:
                 self.bot.memory.pop(0)
             else:
                 break
@@ -345,13 +354,11 @@ class GUI:
             if self.bot.play_from_memory:
                 card_id = self.bot.intelligent_play(self.bot.cards2play[1])
             else:
-                self.bot.search_intelligent(self.xdeck)
+                self.bot.search_intelligent_2nd(self.xdeck)
                 if self.bot.play_from_memory:
-                    card_id = self.bot.intelligent_play(self.bot.cards2play[1])
+                    card_id = self.bot.intelligent_play(self.bot.cards2play[0])
                 else:
                     card_id = self.bot.random_play(self.xdeck)
-            self.bot.play_from_memory = False
-            self.bot.cards2play.clear()
             print()
 
         if self.xdeck.cards[card_id].suit in ["♦","♥"]: # Adds red color
@@ -367,6 +374,9 @@ class GUI:
             self.bot.memory.append(self.xdeck.cards[card_id])
         self.xdeck.cards_check.append(list((self.xdeck.cards[card_id],self.xdeck.cards[card_id].id,r,c)))
         # Using lambda otherwise delay wont work as expected
+        if self.xdeck.counter == 2:
+            self.bot.play_from_memory = False
+            self.bot.cards2play.clear()
         if self.xdeck.counter == 1:
             self.root.after(1500,lambda : self.bot_choose_card())
         if self.xdeck.counter == 2:
@@ -495,7 +505,7 @@ class GUI:
                 else:
                     plist[i+1].myturn = True
                 break
-        
+
         for h in range (len(plist)): #Players presentation refresh
             player = tk.Label(self.frame_b,text=f"{plist[h].name}",height=2,font=("Helvetica",12))
             player.grid(row=h+1,column=0)
@@ -512,8 +522,8 @@ class GUI:
         k=0
         winners=[]
         for i in range(0,len(self.xdeck.cards)):
-           if self.xdeck.cards[i].open==True:
-            s +=1
+            if self.xdeck.cards[i].open==True:
+                s +=1
 
         if s==len(self.xdeck.cards): #finds top score
             for p in range(0,len(players)):
@@ -526,11 +536,13 @@ class GUI:
 
             if len(winners)==1:
                 tk.messagebox.showinfo('information','GAME OVER!!! Winner is: '+ winners[0])
+                exit()
             else:
                 winner_names = ""
                 for x in winners:
                     winner_names += x + ", "
                 tk.messagebox.showinfo('information',f"GAME OVER!!! Draw between:  {winner_names}")
+                exit()
 
     def quit(self):
         print("Quiting game")
@@ -573,7 +585,7 @@ class GUI:
         players.extend(self.db2)
         self.root.destroy()
         self.play()
-        
-        
+
+
 players = []
 interface = GUI()
