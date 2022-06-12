@@ -126,9 +126,13 @@ class Bot:
 
     def random_play(self,xdeck : Deck):
         while True:
+            stored_id = list()
             rand_num = random.randint(0,len(xdeck.cards)-1)
             if xdeck.cards[rand_num].open is False:
-                break
+                for x in self.memory:
+                    stored_id.append(x.id)
+                if rand_num not in stored:
+                    break
         xdeck.cards[rand_num].open = True
         print("->Random Play")
         card_id = xdeck.cards[rand_num].id
@@ -331,7 +335,7 @@ class GUI:
         self.xdeck.cards_check.clear()   # remove cards
         self.check_win(players)
         if players[1].myturn:
-                self.root.after(600,lambda : self.bot_choose_card())  # Using lambda otherwise delay wont work as expected
+            self.root.after(600,lambda : self.bot_choose_card())  # Using lambda otherwise delay wont work as expected
 
     def bot_choose_card(self):
         self.xdeck.counter += 1
