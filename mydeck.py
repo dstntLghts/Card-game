@@ -91,7 +91,7 @@ class Bot:
     def search_intelligent(self,xdeck : Deck):
         break2 = False
         for i in range(len(self.memory)-1):
-            for j in range(i,len(self.memory)-2):
+            for j in range(i,len(self.memory)-1):
                 if self.memory[i].value == self.memory[j+1].value:
                     if self.memory[i].suit != self.memory[j+1].suit:
                         id1 = self.memory[i].id
@@ -125,12 +125,12 @@ class Bot:
         return card.id
 
     def random_play(self,xdeck : Deck):
+        stored_id = list()
+        for x in self.memory:
+            stored_id.append(x.id)
         while True:
-            stored_id = list()
             rand_num = random.randint(0,len(xdeck.cards)-1)
             if xdeck.cards[rand_num].open is False:
-                for x in self.memory:
-                    stored_id.append(x.id)
                 if rand_num not in stored_id:
                     break
         xdeck.cards[rand_num].open = True
