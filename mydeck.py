@@ -331,7 +331,7 @@ class GUI:
                 card.grid(row=self.xdeck.cards[x].row,column=self.xdeck.cards[x].col)
                 self.xdeck.cards[card1_id].open=True # close cards
                 self.xdeck.cards[card2_id].open=True
-        self.bot_player_turn(players, int(self.score_stack), self.xdeck.cards_check) #change turn and sum score function
+        self.player_turn(players, int(self.score_stack), self.xdeck.cards_check) #change turn and sum score function
         self.xdeck.cards_check.clear()   # remove cards
         self.check_win(players)
         if players[1].myturn:
@@ -449,41 +449,6 @@ class GUI:
         players[0].myturn=True
         self.root.destroy()
         self.play()
-
-
-    def bot_player_turn(self,plist,s,dlist): # player turn toggle function
-        # plist: player_list, dlist: deck_list, s: score
-
-        for i in range(len(plist)):
-            if plist[i].myturn==True:   # if player turn
-                plist[i].score += s  # adds score
-                if  dlist[0][0].value=='J' and dlist[1][0].value=='J': # Wildcard "JJ"
-                    # player doesnt lose turn
-                    break
-                plist[i].myturn= False  # loses turn
-                if dlist[0][0].value=='K' and dlist[1][0].value=='K': # Wildcard "KK"
-                    if i == (len(plist)-1):  # if last player
-                        plist[1].myturn = True  # second player plays
-                        break
-                    if i == (len(plist)-2):  # if second last player
-                        plist[0].myturn = True  # first player plays
-                        break
-                    else:
-                        plist[i+2].myturn = True
-                        break
-                if i == (len(plist)-1):  # if last player
-                    plist[0].myturn = True  # first player plays
-                else:
-                    plist[i+1].myturn = True
-                break
-
-        for h in range (len(plist)): #Players presentation refresh
-            player = tk.Label(self.frame_b,text=f"{plist[h].name}",height=2,font=("Helvetica",12))
-            player.grid(row=h+1,column=0)
-            score = tk.Label(self.frame_b,text=f"{plist[h].score}",height=2,font=("Helvetica",12))
-            score.grid(row=h+1,column=1)
-            turn = tk.Label(self.frame_b,text=f"{'◄' if plist[h].myturn else ' '} ",height=2,font=("Helvetica",12))
-            turn.grid(row=h+1,column=2)
 
     def player_turn(self,plist,s,dlist): # player turn toggle function
         # p,d list player, deck list
